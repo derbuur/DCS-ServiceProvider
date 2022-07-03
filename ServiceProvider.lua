@@ -1,6 +1,6 @@
--- ServiceProvider v0.2: a script by buur. It provides radio and other stuff from servic provider like tanker, AWACS or FAC
+-- ServiceProvider v0.3: a script by buur. It provides radio and other stuff from servic provider like tanker, AWACS or FAC
 -- ToDo: FARPS and Carrier. JTACs with more than one target will have several entries for their own position
--- Changelog: protect Tanker, AWACS again late activated units. (not shown in mist database); EWR Radars are added
+-- Changelog: switched from the actual JTAC callsign to the callsign wich is given in the mission 
 function infoAWACS()
 	local msg = {}
 	msg[#msg + 1] = "AWACS\\EWR:"
@@ -46,6 +46,26 @@ function infoAWACS()
 end
 
 function infoFAC()
+JTAC_Callsigns = {
+[1] = "Axeman",	
+[2] = "Darknight",
+[3] = "Warrior",
+[4] = "Pointer",	
+[5] = "Eyeball",
+[6] = "Moonbeam",
+[7] = "Whiplash",	
+[8] = "Finger",	
+[9] = "Pinpoint",	
+[10] = "Ferret",
+[11] = "Shaba",
+[12] = "Playboy",	
+[13] = "Hammer",	
+[14] = "Jaguar",
+[15] = "Deathstar",	
+[16] = "Anvil",
+[17] = "Firefly",	
+[18] = "Mantis",
+[19] = "Badger"}
 	msg = {}
 	msg[#msg + 1] = "FAC:"
 	msg[#msg + 1]='\n'
@@ -59,18 +79,22 @@ function infoFAC()
 			 local lat, lon, alt = coord.LOtoLL(curPoint)
 			 local grid = coord.LLtoMGRS(lat,lon)
 			 local msgstr = callsign.." ".."at Position: " ..grid.UTMZone .. ' ' .. grid.MGRSDigraph .. ' '.. grid.Easting .. ' ' .. grid.Northing.." "--..lat.." "..lon
+
 			 local ServiceProvider = ServiceProvider[ke]:getGroup():getName()
-			 
-			 
+		
 			 local t=mist.getGroupRoute( ServiceProvider , true )[1]["task"]["params"]["tasks"]
 
 			 for key,value in pairs(t) 
 				do
-					  if (t[key]["id"] == "FAC_AttackGroup") or (t[key]["id"] == "FAC") or (t[key]["id"] == "FAC_EngageGroup") then 
-					Modulation = {[0]="AM", [1]="FM"}
+				local actual_JTAC_Callsigns = t[key]["params"]["callname"]
+				local actual_JTAC_Callsigns_name = JTAC_Callsigns[actual_JTAC_Callsigns]
+				callsign_short = callsign:sub(1,-3) 
+					if (((t[key]["id"] == "FAC_AttackGroup") or (t[key]["id"] == "FAC") or (t[key]["id"] == "FAC_EngageGroup" ))and (actual_JTAC_Callsigns_name == callsign_short)) then 
+					local Modulation = {[0]="AM", [1]="FM"}
 					local FAC_frequency = (t[key]["params"]["frequency"])
 					local FAC_Modulation = (t[key]["params"]["modulation"])
-					local msgstr = msgstr.."Freq: "..FAC_frequency/1000000 .." "..Modulation[FAC_Modulation]
+					
+					local msgstr = msgstr.."Freq: "..FAC_frequency/1000000 .." "..Modulation[FAC_Modulation].." "..actual_JTAC_Callsigns
 					msg[#msg + 1] = msgstr
 					msg[#msg + 1]='\n'
 

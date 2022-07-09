@@ -94,7 +94,7 @@ JTAC_Callsigns = {
 					local FAC_frequency = (t[key]["params"]["frequency"])
 					local FAC_Modulation = (t[key]["params"]["modulation"])
 					
-					local msgstr = msgstr.."Freq: "..FAC_frequency/1000000 .." "..Modulation[FAC_Modulation].." "..actual_JTAC_Callsigns
+					local msgstr = msgstr.."Freq: "..FAC_frequency/1000000 .." "..Modulation[FAC_Modulation].." "
 					msg[#msg + 1] = msgstr
 					msg[#msg + 1]='\n'
 
